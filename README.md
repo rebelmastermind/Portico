@@ -1,5 +1,5 @@
 <p align="center">
-<img src="/icons/Portico_icon.svg" 
+<img src="/icons/Portico_icon.svg"
 </p>
 
   # Portico
@@ -57,4 +57,3 @@ We're getting Portico as an extension for Chrome, Brave, Vivaldi and other Chrom
 - Weather requests are always network-first (no stale forecast cache).
 - SortableJS is loaded from CDN, and Portico now runtime-caches that script after first successful load.
 - Result: after one online load, Portico can work offline more reliably.
-
