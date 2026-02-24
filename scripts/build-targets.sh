@@ -17,6 +17,10 @@ rsync -a --delete \
   --exclude "scripts" \
   "$ROOT_DIR/" "$WEB_DIR/"
 
+if [[ -f "$WEB_DIR/Portico.html" ]]; then
+  cp "$WEB_DIR/Portico.html" "$WEB_DIR/index.html"
+fi
+
 echo "[Portico] Building extension target..."
 rsync -a --delete \
   --exclude "dist" \
