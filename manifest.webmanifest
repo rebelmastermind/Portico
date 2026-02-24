@@ -1,0 +1,15 @@
+{
+  "name": "Portico",
+  "short_name": "Portico",
+  "start_url": "./Portico.html",
+  "display": "standalone",
+  "background_color": "#151b28",
+  "theme_color": "#151b28",
+  "icons": [
+    {
+      "src": "./icons/Portico_icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

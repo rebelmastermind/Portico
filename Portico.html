@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Portico</title>
+  <meta name="theme-color" content="#151b28" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/Portico_icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="Portico.css" />
+</head>
+
+<body>
+  <div class="page">
+    <header>
+      <div class="brand-group">
+        <img class="brand-icon" id="brand-icon" src="icons/Portico_icon.svg" alt="Portico" />
+        <div class="title-stack">
+          <h1 class="editable" id="page-title" contenteditable="true" spellcheck="false" data-placeholder="Title">Portico
+          </h1>
+          <div class="sub editable" id="page-subtitle" contenteditable="true" spellcheck="false"
+            data-placeholder="Subtitle"></div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="gear-btn" id="open-settings" aria-label="Settings">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c0 .67.38 1.27.97 1.56.16.08.34.13.54.14H21a2 2 0 0 1 0 4h-.09c-.67 0-1.27.38-1.51 1Z">
+            </path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <section class="ambient" id="ambient-widget" aria-live="polite">
+      <div class="ambient-clock" id="ambient-clock">--:--</div>
+      <div class="ambient-meta">
+        <span class="ambient-location" id="ambient-location">Locating...</span>
+        <span class="ambient-weather-icon" id="ambient-weather-icon" aria-hidden="true"></span>
+        <span id="ambient-weather-text">Fetching weather...</span>
+      </div>
+    </section>
+    <form class="search" id="search-form" autocomplete="off">
+      <div class="search-shell" id="search-shell">
+        <input id="search-input" type="search" placeholder="Search the web" aria-label="Search the web" />
+        <button class="search-submit" id="search-submit" type="submit" aria-label="Search">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="M20 20l-3.5-3.5"></path>
+          </svg>
+        </button>
+      </div>
+    </form>
+    <section class="grid-wrap" id="grid-wrap">
+      <div class="grid" id="grid"></div>
+    </section>
+    <div class="empty" id="empty" hidden>No links yet. Add your first one.</div>
+  </div>
+
+  <div class="modal" id="modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-header">
+        <h2 id="modal-title">Add Link</h2>
+        <button class="icon-btn" type="button" aria-label="Close" data-close>×</button>
+      </div>
+      <form class="modal-form" id="modal-form" autocomplete="off">
+        <div>
+          <label for="modal-title-input">Title</label>
+          <input id="modal-title-input" name="title" placeholder="Title" required />
+        </div>
+        <div>
+          <label for="modal-url-input">URL</label>
+          <input id="modal-url-input" name="url" placeholder="https://example.com" required />
+        </div>
+        <div>
+          <label>Icon</label>
+          <div class="icon-picker">
+            <img class="icon-preview" id="icon-preview" alt="Icon preview" />
+            <div class="icon-helper">Click the icon to set a custom icon URL.</div>
+          </div>
+          <input class="icon-custom" id="modal-icon-input" name="icon" placeholder="https://example.com/icon.png"
+            hidden />
+        </div>
+        <div class="modal-actions">
+          <button type="button" data-close>Cancel</button>
+          <button class="primary" type="submit">Add Link</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="folder-modal" hidden>
+    <div class="modal-backdrop folder-backdrop" data-folder-close></div>
+    <div class="modal-panel folder-panel" role="dialog" aria-modal="true" aria-labelledby="folder-name">
+      <div class="modal-header">
+        <h2 class="editable" id="folder-name" contenteditable="true" spellcheck="false" data-placeholder="Folder">Folder</h2>
+        <button class="folder-color-swatch" id="folder-color-swatch" type="button" aria-label="Folder color"></button>
+        <input id="folder-color-native-input" class="folder-color-native-input" type="color" aria-label="Choose folder color" />
+        <button class="icon-btn" type="button" aria-label="Close" data-folder-close>×</button>
+      </div>
+      <div class="folder-grid" id="folder-grid"></div>
+    </div>
+  </div>
+
+  <div class="modal" id="settings-modal" hidden>
+    <div class="modal-backdrop" data-settings-close></div>
+    <div class="modal-panel settings-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <div class="modal-header">
+        <h2 id="settings-title">Settings</h2>
+        <button class="icon-btn" type="button" aria-label="Close" data-settings-close>×</button>
+      </div>
+      <form class="settings-form" id="settings-form" autocomplete="off">
+        <details class="settings-section">
+          <summary>Background</summary>
+          <div class="settings-grid">
+            <div class="bg-source-row">
+              <label for="bg-image-input">Background image</label>
+              <div class="bg-source-controls">
+                <input id="bg-image-input" name="bgImage" placeholder="https://example.com/wallpaper.jpg" />
+                <button id="bg-image-file-btn" class="settings-action-btn" type="button">Add file</button>
+                <input id="bg-image-file" type="file" accept="image/*" hidden />
+              </div>
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <label for="bg-opacity-input">Opacity</label>
+                <span class="slider-value" id="bg-opacity-value"></span>
+              </div>
+              <input id="bg-opacity-input" type="range" min="0" max="100" step="1" />
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <label for="bg-brightness-input">Brightness</label>
+                <span class="slider-value" id="bg-brightness-value"></span>
+              </div>
+              <input id="bg-brightness-input" type="range" min="0" max="200" step="1" />
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <label for="bg-contrast-input">Contrast</label>
+                <span class="slider-value" id="bg-contrast-value"></span>
+              </div>
+              <input id="bg-contrast-input" type="range" min="0" max="200" step="1" />
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <label for="bg-saturation-input">Saturation</label>
+                <span class="slider-value" id="bg-saturation-value"></span>
+              </div>
+              <input id="bg-saturation-input" type="range" min="0" max="200" step="1" />
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <label for="bg-blur-input">Blur</label>
+                <span class="slider-value" id="bg-blur-value"></span>
+              </div>
+              <input id="bg-blur-input" type="range" min="0" max="40" step="1" />
+            </div>
+          </div>
+        </details>
+        <details class="settings-section">
+          <summary>Style</summary>
+          <div class="settings-grid">
+            <div class="style-line">
+              <div class="line-label">Title</div>
+              <select id="title-font-select" name="titleFont"></select>
+              <div class="slider-compact">
+                <input id="title-size-input" type="range" min="14" max="80" step="1" />
+                <span class="slider-value" id="title-size-value"></span>
+              </div>
+              <button id="title-color-swatch" class="setting-color-swatch" type="button" aria-label="Title color"></button>
+              <input id="title-color-input" class="setting-color-input" type="color" />
+            </div>
+            <div class="style-line">
+              <div class="line-label">Subtitle</div>
+              <select id="subtitle-font-select" name="subtitleFont"></select>
+              <div class="slider-compact">
+                <input id="subtitle-size-input" type="range" min="10" max="42" step="1" />
+                <span class="slider-value" id="subtitle-size-value"></span>
+              </div>
+              <button id="subtitle-color-swatch" class="setting-color-swatch" type="button" aria-label="Subtitle color"></button>
+              <input id="subtitle-color-input" class="setting-color-input" type="color" />
+            </div>
+            <div class="style-line">
+              <div class="line-label">Icon Text</div>
+              <select id="tile-title-font-select" name="tileTitleFont"></select>
+              <div class="slider-compact">
+                <input id="tile-title-size-input" type="range" min="10" max="28" step="1" />
+                <span class="slider-value" id="tile-title-size-value"></span>
+              </div>
+              <button id="tile-title-color-swatch" class="setting-color-swatch" type="button" aria-label="Icon text color"></button>
+              <input id="tile-title-color-input" class="setting-color-input" type="color" />
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <label for="icon-size-input">Icon size</label>
+                <span class="slider-value" id="icon-size-value"></span>
+              </div>
+              <input id="icon-size-input" type="range" min="15" max="256" step="1" />
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <label for="icon-radius-input">Icon roundness</label>
+                <span class="slider-value" id="icon-radius-value"></span>
+              </div>
+              <input id="icon-radius-input" type="range" min="0" max="50" step="1" />
+            </div>
+            <div class="check-row">
+              <label class="summary-switch" for="show-logo-input" aria-label="Show page logo">
+                <input id="show-logo-input" type="checkbox" />
+                <span class="switch-slider"></span>
+              </label>
+              <label for="show-logo-input">Page logo</label>
+            </div>
+            <div class="bg-source-row">
+              <label for="logo-image-input">Logo image</label>
+              <div class="bg-source-controls">
+                <input id="logo-image-input" name="logoImage" placeholder="https://example.com/logo.svg" />
+                <button id="logo-image-file-btn" class="settings-action-btn" type="button">Add file</button>
+                <input id="logo-image-file" type="file" accept="image/*" hidden />
+              </div>
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <label for="logo-opacity-input">Logo opacity</label>
+                <span class="slider-value" id="logo-opacity-value"></span>
+              </div>
+              <input id="logo-opacity-input" type="range" min="0" max="100" step="1" />
+            </div>
+          </div>
+        </details>
+        <details class="settings-section" id="search-settings-section">
+          <summary>Search Bar</summary>
+          <div class="settings-grid">
+            <div class="check-row">
+              <label class="summary-switch" for="show-search-input" aria-label="Show search bar">
+                <input id="show-search-input" type="checkbox" />
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+            <div class="style-line">
+              <div class="line-label">Search</div>
+              <select id="search-engine-select" name="searchEngine"></select>
+              <div class="slider-compact">
+                <input id="search-size-input" type="range" min="12" max="28" step="1" />
+                <span class="slider-value" id="search-size-value"></span>
+              </div>
+              <button id="search-color-swatch" class="setting-color-swatch" type="button" aria-label="Search color"></button>
+              <input id="search-color-input" class="setting-color-input" type="color" />
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <label for="search-brightness-input">Search brightness</label>
+                <span class="slider-value" id="search-brightness-value"></span>
+              </div>
+              <input id="search-brightness-input" type="range" min="0" max="200" step="1" />
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <label for="search-opacity-input">Search opacity</label>
+                <span class="slider-value" id="search-opacity-value"></span>
+              </div>
+              <input id="search-opacity-input" type="range" min="0" max="100" step="1" />
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <label for="search-blur-input">Search blur</label>
+                <span class="slider-value" id="search-blur-value"></span>
+              </div>
+              <input id="search-blur-input" type="range" min="0" max="24" step="1" />
+            </div>
+          </div>
+        </details>
+        <details class="settings-section" id="widget-settings-section">
+          <summary>Widget</summary>
+          <div class="settings-grid">
+            <div class="check-row">
+              <label class="summary-switch" for="show-widget-input" aria-label="Show widget">
+                <input id="show-widget-input" type="checkbox" />
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+            <div class="style-line widget-style-line">
+              <label class="unit-switch" for="temp-unit-input">
+                <span>ºC</span>
+                <input id="temp-unit-input" type="checkbox" />
+                <span class="switch-slider"></span>
+                <span>ºF</span>
+              </label>
+              <label class="unit-switch" for="clock-format-input">
+                <span>24h</span>
+                <input id="clock-format-input" type="checkbox" />
+                <span class="switch-slider"></span>
+                <span>12h</span>
+              </label>
+              <button id="widget-color-swatch" class="setting-color-swatch" type="button" aria-label="Widget color"></button>
+              <input id="widget-color-input" class="setting-color-input" type="color" />
+            </div>
+          </div>
+        </details>
+        <div class="modal-actions start">
+          <button type="button" id="settings-reset">Reset Defaults</button>
+          <button type="button" id="profile-export">Export Profile</button>
+          <button type="button" id="profile-import">Import Profile</button>
+          <input id="profile-import-file" type="file" accept="application/json,.json" hidden />
+          <span style="flex: 1 1 auto;"></span>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="profile-import-options-modal" hidden>
+    <div class="modal-backdrop" data-profile-import-options-close></div>
+    <div class="modal-panel import-options-panel" role="dialog" aria-modal="true" aria-labelledby="profile-import-options-title">
+      <div class="modal-header">
+        <h2 id="profile-import-options-title">Import Profile</h2>
+        <button class="icon-btn" type="button" aria-label="Close" data-profile-import-options-close>×</button>
+      </div>
+      <div class="settings-grid">
+        <label class="check-row" for="import-settings-checkbox">
+          <input id="import-settings-checkbox" type="checkbox" checked />
+          <span>Settings</span>
+        </label>
+        <label class="check-row" for="import-links-checkbox">
+          <input id="import-links-checkbox" type="checkbox" checked />
+          <span>Links and folders</span>
+        </label>
+      </div>
+      <div class="modal-actions">
+        <button type="button" data-profile-import-options-close>Cancel</button>
+        <button type="button" class="primary" id="profile-import-apply">Import</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toast-stack" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+  <script src="js/default-profile.js"></script>
+  <script src="js/constants.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/widgets.js"></script>
+  <script src="js/drag.js"></script>
+  <script src="js/ui-folder.js"></script>
+  <script src="js/ui-render.js"></script>
+  <script src="js/ui-modal.js"></script>
+  <script src="js/ui-events.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/ambient.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>
