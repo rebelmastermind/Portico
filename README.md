@@ -2,7 +2,7 @@
 <img src="/icons/Portico_icon.svg"
 </p>
 
-  # Portico
+# Portico
 
 Portico is a customizable start page / new tab experience focused on speed, aesthetics, and local-first privacy.
 
@@ -44,7 +44,9 @@ You can move setups across browsers/devices using:
 
 ## Installation
 
-For now, just set your browser to start on Portico.html
+For now, just set your browser to start on:
+
+https://rebelmastermind.github.io/Portico/
 
 - Any changes you make will be remembered and stored locally
 - Changes are stored by-browser so you can have diferent personalizations for Firefox, Chrome, Opera, etc.
