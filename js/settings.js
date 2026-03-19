@@ -1,8 +1,141 @@
 (() => {
   const ns = (window.portico = window.portico || {});
-  const { dom, state, storage, stateStore } = ns;
+  const { dom, state, storage, stateStore, utils } = ns;
   let settingsPersistTimer = null;
   let pendingProfileImport = null;
+  const FONT_SELECT_FIELDS = [
+    { selectKey: "uiFontSelect", settingKey: "uiFontFamily" },
+    { selectKey: "titleFontSelect", settingKey: "titleFontFamily" },
+    { selectKey: "subtitleFontSelect", settingKey: "subtitleFontFamily" },
+    { selectKey: "tileTitleFontSelect", settingKey: "tileTitleFontFamily" },
+  ];
+  const RANGE_FIELDS = [
+    { inputKey: "bgOpacityInput", valueKey: "bgOpacityValue", suffix: "%" },
+    { inputKey: "bgBrightnessInput", valueKey: "bgBrightnessValue", suffix: "%" },
+    { inputKey: "bgContrastInput", valueKey: "bgContrastValue", suffix: "%" },
+    { inputKey: "bgSaturationInput", valueKey: "bgSaturationValue", suffix: "%" },
+    { inputKey: "bgBlurInput", valueKey: "bgBlurValue", suffix: "px" },
+    { inputKey: "titleSizeInput", valueKey: "titleSizeValue", suffix: "px" },
+    { inputKey: "subtitleSizeInput", valueKey: "subtitleSizeValue", suffix: "px" },
+    { inputKey: "tileTitleSizeInput", valueKey: "tileTitleSizeValue", suffix: "px" },
+    { inputKey: "iconSizeInput", valueKey: "iconSizeValue", suffix: "px" },
+    { inputKey: "iconRadiusInput", valueKey: "iconRadiusValue", suffix: "%" },
+    { inputKey: "logoOpacityInput", valueKey: "logoOpacityValue", suffix: "%" },
+    { inputKey: "buttonOpacityInput", valueKey: "buttonOpacityValue", suffix: "%" },
+    { inputKey: "buttonBlurInput", valueKey: "buttonBlurValue", suffix: "px" },
+    { inputKey: "tileBgOpacityInput", valueKey: "tileBgOpacityValue", suffix: "%" },
+    { inputKey: "tileBgBlurInput", valueKey: "tileBgBlurValue", suffix: "px" },
+    { inputKey: "gridGapInput", valueKey: "gridGapValue", suffix: "px" },
+    { inputKey: "pageMaxWidthInput", valueKey: "pageMaxWidthValue", suffix: "px" },
+    { inputKey: "pageSidePaddingInput", valueKey: "pageSidePaddingValue", suffix: "px" },
+    { inputKey: "searchSizeInput", valueKey: "searchSizeValue", suffix: "px" },
+    { inputKey: "searchBrightnessInput", valueKey: "searchBrightnessValue", suffix: "%" },
+    { inputKey: "searchOpacityInput", valueKey: "searchOpacityValue", suffix: "%" },
+    { inputKey: "searchBlurInput", valueKey: "searchBlurValue", suffix: "px" },
+  ];
+  const SWATCH_FIELDS = [
+    { swatchKey: "titleColorSwatch", inputKey: "titleColorInput", settingKey: "titleColor" },
+    { swatchKey: "subtitleColorSwatch", inputKey: "subtitleColorInput", settingKey: "subtitleColor" },
+    { swatchKey: "tileTitleColorSwatch", inputKey: "tileTitleColorInput", settingKey: "tileTitleColor" },
+    { swatchKey: "searchColorSwatch", inputKey: "searchColorInput", settingKey: "searchColor" },
+    { swatchKey: "widgetColorSwatch", inputKey: "widgetColorInput", settingKey: "widgetColor" },
+    { swatchKey: "buttonColorSwatch", inputKey: "buttonColorInput", settingKey: "buttonColor" },
+    { swatchKey: "buttonIconColorSwatch", inputKey: "buttonIconColorInput", settingKey: "buttonIconColor" },
+    { swatchKey: "tileBgColorSwatch", inputKey: "tileBgColorInput", settingKey: "tileBackgroundColor" },
+  ];
+  const FORM_FIELD_KEYS = [
+    "uiFontFamily",
+    "bgImage",
+    "bgOpacity",
+    "bgBrightness",
+    "bgContrast",
+    "bgSaturation",
+    "bgBlur",
+    "titleFontFamily",
+    "subtitleFontFamily",
+    "tileTitleFontFamily",
+    "titleSize",
+    "subtitleSize",
+    "tileTitleSize",
+    "titleColor",
+    "subtitleColor",
+    "tileTitleColor",
+    "iconSize",
+    "iconRadius",
+    "showLogo",
+    "logoImage",
+    "logoOpacity",
+    "performanceMode",
+    "buttonColor",
+    "buttonIconColor",
+    "buttonOpacity",
+    "buttonBlur",
+    "tileBackgroundColor",
+    "tileBackgroundOpacity",
+    "tileBackgroundBlur",
+    "gridGap",
+    "pageMaxWidth",
+    "pageSidePadding",
+    "showSearchBar",
+    "searchEngine",
+    "searchSize",
+    "searchColor",
+    "searchBrightness",
+    "searchOpacity",
+    "searchBlur",
+    "showWidget",
+    "tempUnit",
+    "clockFormat",
+    "widgetColor",
+  ];
+  const getSettingsFormValue = (key) => {
+    switch (key) {
+      case "uiFontFamily": return dom.uiFontSelect.value;
+      case "bgImage": return dom.bgImageInput.value.trim();
+      case "bgOpacity": return Number(dom.bgOpacityInput.value);
+      case "bgBrightness": return Number(dom.bgBrightnessInput.value);
+      case "bgContrast": return Number(dom.bgContrastInput.value);
+      case "bgSaturation": return Number(dom.bgSaturationInput.value);
+      case "bgBlur": return Number(dom.bgBlurInput.value);
+      case "titleFontFamily": return dom.titleFontSelect.value;
+      case "subtitleFontFamily": return dom.subtitleFontSelect.value;
+      case "tileTitleFontFamily": return dom.tileTitleFontSelect.value;
+      case "titleSize": return Number(dom.titleSizeInput.value);
+      case "subtitleSize": return Number(dom.subtitleSizeInput.value);
+      case "tileTitleSize": return Number(dom.tileTitleSizeInput.value);
+      case "titleColor": return dom.titleColorInput.value.trim();
+      case "subtitleColor": return dom.subtitleColorInput.value.trim();
+      case "tileTitleColor": return dom.tileTitleColorInput.value.trim();
+      case "iconSize": return Number(dom.iconSizeInput.value);
+      case "iconRadius": return Number(dom.iconRadiusInput.value);
+      case "showLogo": return dom.showLogoInput.checked;
+      case "logoImage": return dom.logoImageInput.value.trim();
+      case "logoOpacity": return Number(dom.logoOpacityInput.value);
+      case "performanceMode": return dom.performanceModeInput.checked;
+      case "buttonColor": return dom.buttonColorInput.value.trim();
+      case "buttonIconColor": return dom.buttonIconColorInput.value.trim();
+      case "buttonOpacity": return Number(dom.buttonOpacityInput.value);
+      case "buttonBlur": return Number(dom.buttonBlurInput.value);
+      case "tileBackgroundColor": return dom.tileBgColorInput.value.trim();
+      case "tileBackgroundOpacity": return Number(dom.tileBgOpacityInput.value);
+      case "tileBackgroundBlur": return Number(dom.tileBgBlurInput.value);
+      case "gridGap": return Number(dom.gridGapInput.value);
+      case "pageMaxWidth": return Number(dom.pageMaxWidthInput.value);
+      case "pageSidePadding": return Number(dom.pageSidePaddingInput.value);
+      case "showSearchBar": return dom.showSearchInput.checked;
+      case "searchEngine": return dom.searchEngineSelect.value;
+      case "searchSize": return Number(dom.searchSizeInput.value);
+      case "searchColor": return dom.searchColorInput.value.trim();
+      case "searchBrightness": return Number(dom.searchBrightnessInput.value);
+      case "searchOpacity": return Number(dom.searchOpacityInput.value);
+      case "searchBlur": return Number(dom.searchBlurInput.value);
+      case "showWidget": return dom.showWidgetInput.checked;
+      case "tempUnit": return dom.tempUnitInput.checked ? "F" : "C";
+      case "clockFormat": return dom.clockFormatInput.checked ? "12h" : "24h";
+      case "widgetColor": return dom.widgetColorInput.value.trim();
+      default: return undefined;
+    }
+  };
   const readTextFile = (file) =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -51,6 +184,10 @@
       const root = document.documentElement;
       const bgImage = s.bgImage ? `url("${s.bgImage}")` : "none";
       const blurScale = s.performanceMode ? 0.62 : 1;
+      const buttonRgb = utils.hexToRgbTriplet(s.buttonColor, "17, 22, 34");
+      const buttonOpacity = Math.max(0, Math.min(1, s.buttonOpacity / 100));
+      const tileBgRgb = utils.hexToRgbTriplet(s.tileBackgroundColor, "17, 22, 34");
+      const tileBgOpacity = Math.max(0, Math.min(1, s.tileBackgroundOpacity / 100));
 
       root.style.setProperty("--bg-image", bgImage);
       root.style.setProperty("--bg-opacity", (s.bgOpacity / 100).toFixed(2));
@@ -59,7 +196,7 @@
       root.style.setProperty("--bg-saturation", (s.bgSaturation / 100).toFixed(2));
       root.style.setProperty("--bg-blur", `${s.bgBlur}px`);
       root.style.setProperty("--bg-blur-effective", `${(s.bgBlur * blurScale).toFixed(2)}px`);
-      root.style.setProperty("--font-family", s.titleFontFamily || s.fontFamily || '"Space Grotesk", "Figtree", "Segoe UI", sans-serif');
+      root.style.setProperty("--font-family", s.uiFontFamily || s.fontFamily || '"Space Grotesk", "Figtree", "Segoe UI", sans-serif');
       root.style.setProperty("--title-font-family", s.titleFontFamily || s.fontFamily || '"Space Grotesk", "Figtree", "Segoe UI", sans-serif');
       root.style.setProperty("--subtitle-font-family", s.subtitleFontFamily || s.fontFamily || '"Space Grotesk", "Figtree", "Segoe UI", sans-serif');
       root.style.setProperty("--tile-title-font-family", s.tileTitleFontFamily || s.fontFamily || '"Space Grotesk", "Figtree", "Segoe UI", sans-serif');
@@ -78,6 +215,22 @@
       root.style.setProperty("--search-opacity", `${(s.searchOpacity / 100).toFixed(2)}`);
       root.style.setProperty("--search-blur", `${s.searchBlur}px`);
       root.style.setProperty("--search-blur-effective", `${(s.searchBlur * blurScale).toFixed(2)}px`);
+      root.style.setProperty("--button-rgb", buttonRgb);
+      root.style.setProperty("--button-surface-opacity", `${buttonOpacity.toFixed(2)}`);
+      root.style.setProperty("--button-bg", `rgba(${buttonRgb}, ${buttonOpacity.toFixed(2)})`);
+      root.style.setProperty("--button-bg-strong", `rgba(${buttonRgb}, ${Math.min(1, buttonOpacity + 0.18).toFixed(2)})`);
+      root.style.setProperty("--button-bg-subtle", `rgba(${buttonRgb}, ${Math.max(0.12, buttonOpacity * 0.72).toFixed(2)})`);
+      root.style.setProperty("--button-blur", `${s.buttonBlur}px`);
+      root.style.setProperty("--button-blur-effective", `${(s.buttonBlur * blurScale).toFixed(2)}px`);
+      root.style.setProperty("--button-icon-color", s.buttonIconColor || "#9aa5b1");
+      root.style.setProperty("--tile-bg-rgb", tileBgRgb);
+      root.style.setProperty("--tile-bg-opacity", `${tileBgOpacity.toFixed(2)}`);
+      root.style.setProperty("--tile-bg-surface", `rgba(${tileBgRgb}, ${tileBgOpacity.toFixed(2)})`);
+      root.style.setProperty("--tile-bg-blur", `${s.tileBackgroundBlur}px`);
+      root.style.setProperty("--tile-bg-blur-effective", `${(s.tileBackgroundBlur * blurScale).toFixed(2)}px`);
+      root.style.setProperty("--grid-gap", `${s.gridGap}px`);
+      root.style.setProperty("--page-max-width", `${s.pageMaxWidth}px`);
+      root.style.setProperty("--page-side-padding", `${s.pageSidePadding}px`);
       root.dataset.performanceMode = s.performanceMode ? "on" : "off";
 
       dom.pageTitle.textContent = s.titleText;
@@ -121,24 +274,60 @@
       document.head.appendChild(link);
     },
 
+    ensurePreviewFontsLoaded() {
+      if (this.previewFontsLoaded) return;
+      const id = "google-font-preview-link";
+      const families = ns.FONT_OPTIONS
+        .map((font) => `family=${font.replace(/\s+/g, "+")}:wght@300;400;500;600;700`)
+        .join("&");
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.id = id;
+      link.href = `https://fonts.googleapis.com/css2?${families}&display=swap`;
+      document.head.appendChild(link);
+      this.previewFontsLoaded = true;
+    },
+
     populateFontOptions() {
-      dom.titleFontSelect.innerHTML = "";
-      dom.subtitleFontSelect.innerHTML = "";
-      dom.tileTitleFontSelect.innerHTML = "";
-      ns.FONT_OPTIONS.forEach((font) => {
-        const titleOption = document.createElement("option");
-        titleOption.value = font;
-        titleOption.textContent = font;
-        dom.titleFontSelect.append(titleOption);
-        const subtitleOption = document.createElement("option");
-        subtitleOption.value = font;
-        subtitleOption.textContent = font;
-        dom.subtitleFontSelect.append(subtitleOption);
-        const tileTitleOption = document.createElement("option");
-        tileTitleOption.value = font;
-        tileTitleOption.textContent = font;
-        dom.tileTitleFontSelect.append(tileTitleOption);
+      FONT_SELECT_FIELDS.forEach(({ selectKey }) => {
+        if (dom[selectKey]) dom[selectKey].innerHTML = "";
       });
+
+      ns.FONT_GROUPS.forEach((group) => {
+        FONT_SELECT_FIELDS.forEach(({ selectKey }) => {
+          const select = dom[selectKey];
+          if (!select) return;
+          const optgroup = document.createElement("optgroup");
+          optgroup.label = group.label;
+          group.options.forEach((font) => {
+            const option = document.createElement("option");
+            option.value = font;
+            option.textContent = font;
+            option.style.fontFamily = `"${font}", sans-serif`;
+            optgroup.append(option);
+          });
+          select.append(optgroup);
+        });
+      });
+    },
+
+    ensureSelectHasOption(select, value, groupLabel = "Saved") {
+      if (!select || !value) return;
+      const hasOption = Array.from(select.options).some((option) => option.value === value);
+      if (hasOption) return;
+      let group = Array.from(select.children).find(
+        (element) => element.tagName === "OPTGROUP" && element.label === groupLabel
+      );
+      if (!group) {
+        group = document.createElement("optgroup");
+        group.label = groupLabel;
+        select.prepend(group);
+      }
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = value;
+      option.style.fontFamily = `"${value}", sans-serif`;
+      group.append(option);
     },
 
     populateSearchEngineOptions() {
@@ -152,29 +341,21 @@
     },
 
     updateSliderValues() {
-      dom.bgOpacityValue.textContent = `${dom.bgOpacityInput.value}%`;
-      dom.bgBrightnessValue.textContent = `${dom.bgBrightnessInput.value}%`;
-      dom.bgContrastValue.textContent = `${dom.bgContrastInput.value}%`;
-      dom.bgSaturationValue.textContent = `${dom.bgSaturationInput.value}%`;
-      dom.bgBlurValue.textContent = `${dom.bgBlurInput.value}px`;
-      dom.iconSizeValue.textContent = `${dom.iconSizeInput.value}px`;
-      dom.iconRadiusValue.textContent = `${dom.iconRadiusInput.value}%`;
-      dom.searchBrightnessValue.textContent = `${dom.searchBrightnessInput.value}%`;
-      dom.searchOpacityValue.textContent = `${dom.searchOpacityInput.value}%`;
-      dom.searchBlurValue.textContent = `${dom.searchBlurInput.value}px`;
-      dom.titleSizeValue.textContent = `${dom.titleSizeInput.value}px`;
-      dom.subtitleSizeValue.textContent = `${dom.subtitleSizeInput.value}px`;
-      dom.tileTitleSizeValue.textContent = `${dom.tileTitleSizeInput.value}px`;
-      dom.searchSizeValue.textContent = `${dom.searchSizeInput.value}px`;
-      dom.logoOpacityValue.textContent = `${dom.logoOpacityInput.value}%`;
+      RANGE_FIELDS.forEach(({ inputKey, valueKey, suffix }) => {
+        const input = dom[inputKey];
+        const value = dom[valueKey];
+        if (!input || !value) return;
+        value.textContent = `${input.value}${suffix}`;
+      });
     },
 
     syncColorSwatches() {
-      dom.titleColorSwatch.style.background = dom.titleColorInput.value || state.settings.titleColor;
-      dom.subtitleColorSwatch.style.background = dom.subtitleColorInput.value || state.settings.subtitleColor;
-      dom.tileTitleColorSwatch.style.background = dom.tileTitleColorInput.value || state.settings.tileTitleColor;
-      dom.searchColorSwatch.style.background = dom.searchColorInput.value || state.settings.searchColor;
-      dom.widgetColorSwatch.style.background = dom.widgetColorInput.value || state.settings.widgetColor;
+      SWATCH_FIELDS.forEach(({ swatchKey, inputKey, settingKey }) => {
+        const swatch = dom[swatchKey];
+        const input = dom[inputKey];
+        if (!swatch || !input) return;
+        swatch.style.background = input.value || state.settings[settingKey];
+      });
     },
 
     syncSectionDisabledStates() {
@@ -199,6 +380,11 @@
       dom.bgContrastInput.value = s.bgContrast;
       dom.bgSaturationInput.value = s.bgSaturation;
       dom.bgBlurInput.value = s.bgBlur;
+      this.ensureSelectHasOption(dom.uiFontSelect, s.uiFontFamily || s.fontFamily);
+      this.ensureSelectHasOption(dom.titleFontSelect, s.titleFontFamily || s.fontFamily);
+      this.ensureSelectHasOption(dom.subtitleFontSelect, s.subtitleFontFamily || s.fontFamily);
+      this.ensureSelectHasOption(dom.tileTitleFontSelect, s.tileTitleFontFamily || s.fontFamily);
+      dom.uiFontSelect.value = s.uiFontFamily || s.fontFamily;
       dom.titleFontSelect.value = s.titleFontFamily || s.fontFamily;
       dom.subtitleFontSelect.value = s.subtitleFontFamily || s.fontFamily;
       dom.tileTitleFontSelect.value = s.tileTitleFontFamily || s.fontFamily;
@@ -221,6 +407,16 @@
       dom.widgetColorInput.value = s.widgetColor;
       dom.iconSizeInput.value = s.iconSize;
       dom.iconRadiusInput.value = s.iconRadius;
+      dom.buttonColorInput.value = s.buttonColor;
+      dom.buttonIconColorInput.value = s.buttonIconColor;
+      dom.buttonOpacityInput.value = s.buttonOpacity;
+      dom.buttonBlurInput.value = s.buttonBlur;
+      dom.tileBgColorInput.value = s.tileBackgroundColor;
+      dom.tileBgOpacityInput.value = s.tileBackgroundOpacity;
+      dom.tileBgBlurInput.value = s.tileBackgroundBlur;
+      dom.gridGapInput.value = s.gridGap;
+      dom.pageMaxWidthInput.value = s.pageMaxWidth;
+      dom.pageSidePaddingInput.value = s.pageSidePadding;
       dom.showLogoInput.checked = s.showLogo !== false;
       dom.performanceModeInput.checked = s.performanceMode === true;
       dom.logoImageInput.value = s.logoImage || "";
@@ -233,40 +429,10 @@
     },
 
     collectFromForm() {
-      return {
-        bgImage: dom.bgImageInput.value.trim(),
-        bgOpacity: Number(dom.bgOpacityInput.value),
-        bgBrightness: Number(dom.bgBrightnessInput.value),
-        bgContrast: Number(dom.bgContrastInput.value),
-        bgSaturation: Number(dom.bgSaturationInput.value),
-        bgBlur: Number(dom.bgBlurInput.value),
-        titleFontFamily: dom.titleFontSelect.value,
-        subtitleFontFamily: dom.subtitleFontSelect.value,
-        tileTitleFontFamily: dom.tileTitleFontSelect.value,
-        showSearchBar: dom.showSearchInput.checked,
-        showWidget: dom.showWidgetInput.checked,
-        tempUnit: dom.tempUnitInput.checked ? "F" : "C",
-        clockFormat: dom.clockFormatInput.checked ? "12h" : "24h",
-        searchEngine: dom.searchEngineSelect.value,
-        searchBrightness: Number(dom.searchBrightnessInput.value),
-        searchOpacity: Number(dom.searchOpacityInput.value),
-        searchBlur: Number(dom.searchBlurInput.value),
-        titleSize: Number(dom.titleSizeInput.value),
-        subtitleSize: Number(dom.subtitleSizeInput.value),
-        tileTitleSize: Number(dom.tileTitleSizeInput.value),
-        searchSize: Number(dom.searchSizeInput.value),
-        titleColor: dom.titleColorInput.value.trim(),
-        subtitleColor: dom.subtitleColorInput.value.trim(),
-        tileTitleColor: dom.tileTitleColorInput.value.trim(),
-        searchColor: dom.searchColorInput.value.trim(),
-        widgetColor: dom.widgetColorInput.value.trim(),
-        iconSize: Number(dom.iconSizeInput.value),
-        iconRadius: Number(dom.iconRadiusInput.value),
-        showLogo: dom.showLogoInput.checked,
-        performanceMode: dom.performanceModeInput.checked,
-        logoImage: dom.logoImageInput.value.trim(),
-        logoOpacity: Number(dom.logoOpacityInput.value),
-      };
+      return FORM_FIELD_KEYS.reduce((acc, key) => {
+        acc[key] = getSettingsFormValue(key);
+        return acc;
+      }, {});
     },
 
     schedulePersist(delayMs = 220) {

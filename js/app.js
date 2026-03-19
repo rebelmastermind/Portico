@@ -22,6 +22,7 @@
       ns.settingsModule.populateFontOptions();
       ns.settingsModule.populateSearchEngineOptions();
       ns.settingsModule.ensureFontsLoaded([
+        ns.state.settings.uiFontFamily || ns.state.settings.fontFamily,
         ns.state.settings.titleFontFamily || ns.state.settings.fontFamily,
         ns.state.settings.subtitleFontFamily || ns.state.settings.fontFamily,
         ns.state.settings.tileTitleFontFamily || ns.state.settings.fontFamily,

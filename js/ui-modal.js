@@ -112,6 +112,9 @@
     },
 
     openSettings() {
+      if (ns.settingsModule && typeof ns.settingsModule.ensurePreviewFontsLoaded === "function") {
+        ns.settingsModule.ensurePreviewFontsLoaded();
+      }
       if (dom.settingsForm) {
         dom.settingsForm.querySelectorAll("details.settings-section").forEach((section) => {
           section.open = false;

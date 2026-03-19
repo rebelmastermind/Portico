@@ -105,6 +105,18 @@
       const tileTitleColor = this.normalizeHexColor(merged.tileTitleColor, legacyFontColor);
       const searchColor = this.normalizeHexColor(merged.searchColor, legacyFontColor);
       const widgetColor = this.normalizeHexColor(merged.widgetColor, legacyFontColor);
+      const buttonColor = this.normalizeHexColor(
+        merged.buttonColor ?? merged.uiColor,
+        ns.DEFAULT_SETTINGS.buttonColor
+      );
+      const buttonIconColor = this.normalizeHexColor(
+        merged.buttonIconColor,
+        ns.DEFAULT_SETTINGS.buttonIconColor
+      );
+      const tileBackgroundColor = this.normalizeHexColor(
+        merged.tileBackgroundColor,
+        ns.DEFAULT_SETTINGS.tileBackgroundColor
+      );
       const tempUnitRaw = String(merged.tempUnit || "C").toUpperCase();
       const tempUnit = tempUnitRaw === "F" ? "F" : "C";
       const clockFormatRaw = String(merged.clockFormat || ns.DEFAULT_SETTINGS.clockFormat).toLowerCase();
@@ -120,6 +132,7 @@
         titleFontFamily: String(merged.titleFontFamily || legacyFontFamily),
         subtitleFontFamily: String(merged.subtitleFontFamily || legacyFontFamily),
         tileTitleFontFamily: String(merged.tileTitleFontFamily || legacyFontFamily),
+        uiFontFamily: String(merged.uiFontFamily || legacyFontFamily),
         titleSize: this.toNumberInRange(merged.titleSize, legacyFontSize, 14, 80),
         subtitleSize: this.toNumberInRange(merged.subtitleSize, legacyFontSize, 10, 42),
         tileTitleSize: this.toNumberInRange(merged.tileTitleSize, ns.DEFAULT_SETTINGS.tileTitleSize, 10, 28),
@@ -129,8 +142,43 @@
         tileTitleColor,
         searchColor,
         widgetColor,
+        buttonColor,
+        buttonIconColor,
+        tileBackgroundColor,
         iconSize: this.toNumberInRange(merged.iconSize, ns.DEFAULT_SETTINGS.iconSize, 15, 256),
         iconRadius: this.toNumberInRange(merged.iconRadius, ns.DEFAULT_SETTINGS.iconRadius, 0, 50),
+        buttonOpacity: this.toNumberInRange(
+          merged.buttonOpacity ?? merged.uiOpacity,
+          ns.DEFAULT_SETTINGS.buttonOpacity,
+          0,
+          100
+        ),
+        buttonBlur: this.toNumberInRange(
+          merged.buttonBlur ?? merged.uiBlur,
+          ns.DEFAULT_SETTINGS.buttonBlur,
+          0,
+          20
+        ),
+        tileBackgroundOpacity: this.toNumberInRange(
+          merged.tileBackgroundOpacity,
+          ns.DEFAULT_SETTINGS.tileBackgroundOpacity,
+          0,
+          100
+        ),
+        tileBackgroundBlur: this.toNumberInRange(
+          merged.tileBackgroundBlur,
+          ns.DEFAULT_SETTINGS.tileBackgroundBlur,
+          0,
+          20
+        ),
+        gridGap: this.toNumberInRange(merged.gridGap, ns.DEFAULT_SETTINGS.gridGap, 0, 40),
+        pageMaxWidth: this.toNumberInRange(merged.pageMaxWidth, ns.DEFAULT_SETTINGS.pageMaxWidth, 720, 2200),
+        pageSidePadding: this.toNumberInRange(
+          merged.pageSidePadding,
+          ns.DEFAULT_SETTINGS.pageSidePadding,
+          8,
+          80
+        ),
         showLogo: merged.showLogo !== false,
         logoImage: String(merged.logoImage || ""),
         logoOpacity: this.toNumberInRange(merged.logoOpacity, ns.DEFAULT_SETTINGS.logoOpacity, 0, 100),

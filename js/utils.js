@@ -9,6 +9,19 @@
       return `https://${trimmed}`;
     },
 
+    hexToRgbTriplet(value, fallback = "17, 22, 34") {
+      const raw = String(value || "").trim();
+      const normalized = /^#[0-9a-f]{3}$/i.test(raw)
+        ? `#${raw[1]}${raw[1]}${raw[2]}${raw[2]}${raw[3]}${raw[3]}`
+        : raw;
+      if (!/^#[0-9a-f]{6}$/i.test(normalized)) return fallback;
+      const int = Number.parseInt(normalized.slice(1), 16);
+      const r = (int >> 16) & 255;
+      const g = (int >> 8) & 255;
+      const b = int & 255;
+      return `${r}, ${g}, ${b}`;
+    },
+
     getFaviconUrl(url) {
       try {
         const parsed = new URL(url);

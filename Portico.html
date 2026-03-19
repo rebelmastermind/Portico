@@ -164,7 +164,7 @@
           </div>
         </details>
         <details class="settings-section">
-          <summary>Style</summary>
+          <summary>Typography</summary>
           <div class="settings-grid">
             <div class="style-line">
               <div class="line-label">Title</div>
@@ -187,25 +187,70 @@
               <input id="subtitle-color-input" class="setting-color-input" type="color" />
             </div>
             <div class="style-line">
-              <div class="line-label">Icon Text</div>
+              <div class="line-label">Tile text</div>
               <select id="tile-title-font-select" name="tileTitleFont"></select>
               <div class="slider-compact">
                 <input id="tile-title-size-input" type="range" min="10" max="28" step="1" />
                 <span class="slider-value" id="tile-title-size-value"></span>
               </div>
-              <button id="tile-title-color-swatch" class="setting-color-swatch" type="button" aria-label="Icon text color"></button>
+              <button id="tile-title-color-swatch" class="setting-color-swatch" type="button" aria-label="Tile text color"></button>
               <input id="tile-title-color-input" class="setting-color-input" type="color" />
             </div>
-            <div class="slider-row">
-              <div class="slider-label">
-                <label for="icon-size-input">Icon size</label>
-                <span class="slider-value" id="icon-size-value"></span>
-              </div>
-              <input id="icon-size-input" type="range" min="15" max="256" step="1" />
+            <div class="style-line">
+              <div class="line-label">UI</div>
+              <select id="ui-font-select" name="uiFont"></select>
+            </div>
+          </div>
+        </details>
+        <details class="settings-section">
+          <summary>UI</summary>
+          <div class="settings-grid">
+            <div class="swatch-line">
+              <div class="line-label">Button color</div>
+              <button id="button-color-swatch" class="setting-color-swatch" type="button" aria-label="Button color"></button>
+              <input id="button-color-input" class="setting-color-input" type="color" />
+            </div>
+            <div class="swatch-line">
+              <div class="line-label">Button icon</div>
+              <button id="button-icon-color-swatch" class="setting-color-swatch" type="button" aria-label="Button icon color"></button>
+              <input id="button-icon-color-input" class="setting-color-input" type="color" />
             </div>
             <div class="slider-row">
               <div class="slider-label">
-                <label for="icon-radius-input">Icon roundness</label>
+                <label for="button-opacity-input">Button opacity</label>
+                <span class="slider-value" id="button-opacity-value"></span>
+              </div>
+              <input id="button-opacity-input" type="range" min="0" max="100" step="1" />
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <label for="button-blur-input">Button blur</label>
+                <span class="slider-value" id="button-blur-value"></span>
+              </div>
+              <input id="button-blur-input" type="range" min="0" max="20" step="1" />
+            </div>
+            <div class="swatch-line">
+              <div class="line-label">Tile background</div>
+              <button id="tile-bg-color-swatch" class="setting-color-swatch" type="button" aria-label="Tile background color"></button>
+              <input id="tile-bg-color-input" class="setting-color-input" type="color" />
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <label for="tile-bg-opacity-input">Tile opacity</label>
+                <span class="slider-value" id="tile-bg-opacity-value"></span>
+              </div>
+              <input id="tile-bg-opacity-input" type="range" min="0" max="100" step="1" />
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <label for="tile-bg-blur-input">Tile blur</label>
+                <span class="slider-value" id="tile-bg-blur-value"></span>
+              </div>
+              <input id="tile-bg-blur-input" type="range" min="0" max="20" step="1" />
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <label for="icon-radius-input">Roundness</label>
                 <span class="slider-value" id="icon-radius-value"></span>
               </div>
               <input id="icon-radius-input" type="range" min="0" max="50" step="1" />
@@ -238,6 +283,39 @@
                 <span class="switch-slider"></span>
               </label>
               <label for="performance-mode-input">Performance mode</label>
+            </div>
+          </div>
+        </details>
+        <details class="settings-section">
+          <summary>Layout</summary>
+          <div class="settings-grid">
+            <div class="slider-row">
+              <div class="slider-label">
+                <label for="icon-size-input">Tile size</label>
+                <span class="slider-value" id="icon-size-value"></span>
+              </div>
+              <input id="icon-size-input" type="range" min="15" max="256" step="1" />
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <label for="grid-gap-input">Grid gap</label>
+                <span class="slider-value" id="grid-gap-value"></span>
+              </div>
+              <input id="grid-gap-input" type="range" min="0" max="40" step="1" />
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <label for="page-max-width-input">Page width</label>
+                <span class="slider-value" id="page-max-width-value"></span>
+              </div>
+              <input id="page-max-width-input" type="range" min="720" max="2200" step="10" />
+            </div>
+            <div class="slider-row">
+              <div class="slider-label">
+                <label for="page-side-padding-input">Side padding</label>
+                <span class="slider-value" id="page-side-padding-value"></span>
+              </div>
+              <input id="page-side-padding-input" type="range" min="8" max="80" step="1" />
             </div>
           </div>
         </details>

@@ -171,6 +171,9 @@
       bindColorSwatch(dom.tileTitleColorSwatch, dom.tileTitleColorInput);
       bindColorSwatch(dom.searchColorSwatch, dom.searchColorInput);
       bindColorSwatch(dom.widgetColorSwatch, dom.widgetColorInput);
+      bindColorSwatch(dom.buttonColorSwatch, dom.buttonColorInput);
+      bindColorSwatch(dom.buttonIconColorSwatch, dom.buttonIconColorInput);
+      bindColorSwatch(dom.tileBgColorSwatch, dom.tileBgColorInput);
 
       dom.bgImageInput.addEventListener("change", () => {
         ns.settingsModule.commit({ bgImage: dom.bgImageInput.value.trim() });
