@@ -221,11 +221,11 @@
       if (state.ui.sortableInstance || !window.Sortable) return;
 
       const sortableInstance = new Sortable(dom.grid, {
-        animation: 520,
+        animation: ns.settingsModule?.getDragAnimationDuration?.() || 260,
         ghostClass: "dragging",
         chosenClass: "dragging",
         dragClass: "dragging",
-        easing: "cubic-bezier(0.16, 1, 0.3, 1)",
+        easing: ns.settingsModule?.getDragEasing?.() || "cubic-bezier(0.16, 1, 0.3, 1)",
         swapThreshold: 0.6,
         invertSwap: true,
         filter: ".add-tile",

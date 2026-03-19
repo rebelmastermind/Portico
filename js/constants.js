@@ -95,6 +95,7 @@
     logoOpacity: 100,
     showSearchBar: true,
     showWidget: true,
+    performanceMode: false,
     tempUnit: "C",
     clockFormat: "24h",
     searchEngine: "google",

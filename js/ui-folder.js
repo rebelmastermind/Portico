@@ -187,11 +187,11 @@
 
       if (window.Sortable) {
         const folderSortable = new Sortable(dom.folderGrid, {
-          animation: 520,
+          animation: ns.settingsModule?.getDragAnimationDuration?.() || 260,
           ghostClass: "dragging",
           chosenClass: "dragging",
           dragClass: "dragging",
-          easing: "cubic-bezier(0.16, 1, 0.3, 1)",
+          easing: ns.settingsModule?.getDragEasing?.() || "cubic-bezier(0.16, 1, 0.3, 1)",
           onEnd: () => {
             const orderedIds = Array.from(dom.folderGrid.querySelectorAll(".folder-item[data-item-id]"))
               .map((el) => el.dataset.itemId)

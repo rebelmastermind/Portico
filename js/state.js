@@ -87,6 +87,7 @@
     iconRadiusInput: document.getElementById("icon-radius-input"),
     iconRadiusValue: document.getElementById("icon-radius-value"),
     showLogoInput: document.getElementById("show-logo-input"),
+    performanceModeInput: document.getElementById("performance-mode-input"),
     logoImageInput: document.getElementById("logo-image-input"),
     logoImageFileBtn: document.getElementById("logo-image-file-btn"),
     logoImageFileInput: document.getElementById("logo-image-file"),

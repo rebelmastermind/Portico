@@ -136,6 +136,7 @@
         logoOpacity: this.toNumberInRange(merged.logoOpacity, ns.DEFAULT_SETTINGS.logoOpacity, 0, 100),
         showSearchBar: merged.showSearchBar !== false,
         showWidget: merged.showWidget !== false,
+        performanceMode: merged.performanceMode === true,
         tempUnit,
         clockFormat,
         searchEngine: validEngineIds.has(candidateEngine) ? candidateEngine : ns.DEFAULT_SETTINGS.searchEngine,

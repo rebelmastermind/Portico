@@ -20,6 +20,8 @@
     dom.iconPreview.src = ns.DEFAULT_ICON;
   };
 
+  const getModalCloseFallbackMs = () => (ns.state?.settings?.performanceMode ? 210 : 300);
+
   const fillLinkModalFields = ({ title = "", url = "", iconUrl = "" } = {}) => {
     dom.titleInput.value = title;
     dom.urlInput.value = url;
@@ -43,7 +45,7 @@
         element.removeEventListener("transitionend", finish);
       };
       element.addEventListener("transitionend", finish);
-      setTimeout(() => finish(), 380);
+      setTimeout(() => finish(), getModalCloseFallbackMs());
     },
 
     updateIconPreview() {

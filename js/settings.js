@@ -23,10 +23,34 @@
   };
 
   ns.settingsModule = {
+    getDragAnimationDuration() {
+      return state.settings.performanceMode ? 170 : 260;
+    },
+
+    getDragEasing() {
+      return state.settings.performanceMode
+        ? "cubic-bezier(0.22, 0.8, 0.22, 1)"
+        : "cubic-bezier(0.16, 1, 0.3, 1)";
+    },
+
+    syncInteractionPerformance() {
+      const animation = this.getDragAnimationDuration();
+      const easing = this.getDragEasing();
+      if (state.ui.sortableInstance) {
+        state.ui.sortableInstance.option("animation", animation);
+        state.ui.sortableInstance.option("easing", easing);
+      }
+      if (state.ui.folderSortable) {
+        state.ui.folderSortable.option("animation", animation);
+        state.ui.folderSortable.option("easing", easing);
+      }
+    },
+
     applyToCss() {
       const s = state.settings;
       const root = document.documentElement;
       const bgImage = s.bgImage ? `url("${s.bgImage}")` : "none";
+      const blurScale = s.performanceMode ? 0.62 : 1;
 
       root.style.setProperty("--bg-image", bgImage);
       root.style.setProperty("--bg-opacity", (s.bgOpacity / 100).toFixed(2));
@@ -34,6 +58,7 @@
       root.style.setProperty("--bg-contrast", (s.bgContrast / 100).toFixed(2));
       root.style.setProperty("--bg-saturation", (s.bgSaturation / 100).toFixed(2));
       root.style.setProperty("--bg-blur", `${s.bgBlur}px`);
+      root.style.setProperty("--bg-blur-effective", `${(s.bgBlur * blurScale).toFixed(2)}px`);
       root.style.setProperty("--font-family", s.titleFontFamily || s.fontFamily || '"Space Grotesk", "Figtree", "Segoe UI", sans-serif');
       root.style.setProperty("--title-font-family", s.titleFontFamily || s.fontFamily || '"Space Grotesk", "Figtree", "Segoe UI", sans-serif');
       root.style.setProperty("--subtitle-font-family", s.subtitleFontFamily || s.fontFamily || '"Space Grotesk", "Figtree", "Segoe UI", sans-serif');
@@ -52,6 +77,8 @@
       root.style.setProperty("--search-brightness", `${(s.searchBrightness / 100).toFixed(2)}`);
       root.style.setProperty("--search-opacity", `${(s.searchOpacity / 100).toFixed(2)}`);
       root.style.setProperty("--search-blur", `${s.searchBlur}px`);
+      root.style.setProperty("--search-blur-effective", `${(s.searchBlur * blurScale).toFixed(2)}px`);
+      root.dataset.performanceMode = s.performanceMode ? "on" : "off";
 
       dom.pageTitle.textContent = s.titleText;
       dom.pageSubtitle.textContent = s.subtitleText;
@@ -61,6 +88,7 @@
       dom.searchForm.hidden = s.showSearchBar === false;
       dom.ambientWidget.hidden = s.showWidget === false;
       this.syncSectionDisabledStates();
+      this.syncInteractionPerformance();
       const selected = ns.SEARCH_ENGINES.find((engine) => engine.id === s.searchEngine) || ns.SEARCH_ENGINES[0];
       dom.searchInput.placeholder = `Search with ${selected.label}`;
       if (ns.ambientWidget && typeof ns.ambientWidget.refreshPresentation === "function") {
@@ -194,6 +222,7 @@
       dom.iconSizeInput.value = s.iconSize;
       dom.iconRadiusInput.value = s.iconRadius;
       dom.showLogoInput.checked = s.showLogo !== false;
+      dom.performanceModeInput.checked = s.performanceMode === true;
       dom.logoImageInput.value = s.logoImage || "";
       dom.logoOpacityInput.value = s.logoOpacity;
       dom.bgImageFileInput.value = "";
@@ -234,6 +263,7 @@
         iconSize: Number(dom.iconSizeInput.value),
         iconRadius: Number(dom.iconRadiusInput.value),
         showLogo: dom.showLogoInput.checked,
+        performanceMode: dom.performanceModeInput.checked,
         logoImage: dom.logoImageInput.value.trim(),
         logoOpacity: Number(dom.logoOpacityInput.value),
       };
